@@ -1,4 +1,4 @@
-from Inclass_question6_proj.Utils.Query_exec import data_to_csv,query_exe,read_sql_file
+from Inclass_question6_project.Utils.Query_exec import data_to_csv,query_exe,read_sql_file
 from inclass_question6 import generate_dummy_info
 from s3 import create_buc,check_buc_name,upload,create_buc_obj
 
@@ -7,20 +7,20 @@ data = generate_dummy_info()
 data_to_csv(data=data,columns=['product_name', 'cost_ammount'],output_file='product_data_20230401.csv')
 
 #Creating Product Table
-read_sql_file(sql_file='C:/Users/Shrey/PycharmProjects/pythonProject/Inclass_question6_proj/SQL/create_table_product_data.sql')
+read_sql_file(sql_file='/Inclass_question6_project/SQL/create_table_product_data.sql')
 
 #Loading Product Data to S3 using AWS Cli
 #aws s3 cp product_data_20230401.csv s3://redshifts3demo or
 upload(file_name='order_data_20230401.csv',bucket_name='redshifts3demo')
 
 #Loading to Redshift from S3
-read_sql_file(sql_file='C:/Users/Shrey/PycharmProjects/pythonProject/Inclass_question6_proj/SQL/Loading_order_data_to_redshift.sql')
+read_sql_file(sql_file='/Inclass_question6_project/SQL/Loading_order_data_to_redshift.sql')
 
 
 #Creating View
-read_sql_file(sql_file='C:/Users/Shrey/PycharmProjects/pythonProject/Inclass_question6_proj/SQL/create_view_procost_data.sql')
-read_sql_file(sql_file='C:/Users/Shrey/PycharmProjects/pythonProject/Inclass_question6_proj/SQL/create_view_profit.sql')
-read_sql_file(sql_file='C:/Users/Shrey/PycharmProjects/pythonProject/Inclass_question6_proj/SQL/create_view_total_profit_company.sql')
+read_sql_file(sql_file='/Inclass_question6_project/SQL/create_view_procost_data.sql')
+read_sql_file(sql_file='/Inclass_question6_project/SQL/create_view_profit.sql')
+read_sql_file(sql_file='/Inclass_question6_project/SQL/create_view_total_profit_company.sql')
 
 
 #Displaying View
@@ -51,9 +51,9 @@ create_buc_obj(bucket_name='tranformdata',folder_name='vw_profit_company_rnk/')
 
 
 #Unloading Data to S3
-read_sql_file(sql_file='C:/Users/Shrey/PycharmProjects/pythonProject/Inclass_question6_proj/SQL/unload_vw_procost_data.sql')
-read_sql_file(sql_file='C:/Users/Shrey/PycharmProjects/pythonProject/Inclass_question6_proj/SQL/unload_vw_profit.sql')
-read_sql_file(sql_file='C:/Users/Shrey/PycharmProjects/pythonProject/Inclass_question6_proj/SQL/unload_vw_profit_per_company.sql')
+read_sql_file(sql_file='/Inclass_question6_project/SQL/unload_vw_procost_data.sql')
+read_sql_file(sql_file='/Inclass_question6_project/SQL/unload_vw_profit.sql')
+read_sql_file(sql_file='/Inclass_question6_project/SQL/unload_vw_profit_per_company.sql')
 
 
 

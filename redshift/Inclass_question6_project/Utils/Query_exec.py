@@ -1,5 +1,5 @@
 import pandas as pd
-import Inclass_question6_proj.Config.Connection as db
+import Inclass_question6_project.Config.Connection as db
 import psycopg2
 from sqlalchemy import *
 from sqlalchemy.engine.url import URL
