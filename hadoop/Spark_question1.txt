@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 
 from pyspark.sql import SparkSession
@@ -36,3 +37,43 @@ df=read.csv("s3://sparkdatapro/Datafolder/2022-01-02.csv",header=True)
 df.write.parquet("s3://sparkdatapro/customer_pyspark/data_date=2022-01-02/")
 df=read.csv("s3://sparkdatapro/Datafolder/2022-01-01.csv",header=True)
 df.write.parquet("s3://sparkdatapro/customer_pyspark/data_date=2022-01-01/")
+=======
+
+
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import when
+
+spark = SparkSession.builder \
+      .master("local[1]") \
+      .appName("SparkLearing") \
+      .getOrCreate()
+
+df=spark.read.csv("s3://sparkdatapro/Datafolder/2022-01-01.csv",header=True)
+df1=df.withColumn("load_time",current_timestamp())
+df2=df1.withColumn("Name",concat(df1.acct_hldr_first_name,df1.acct_hldr_last_name))
+df3=df2.withColumn("account_type",when(substring(df2.account_id,1,2)=="CK","Checking").when(substring(df2.account_id,1,2)=="PV","Private").otherwise("Saving"))
+df4=df3.drop("account_id_type")
+df4.write.parquet("s3://sparkdatapro/customer_pyspark/data_date=2022-01-01/")
+
+
+
+
+df=read.csv("s3://sparkdatapro/Datafolder/2022-01-09.csv",header=True)
+df.write.parquet("s3://sparkdatapro/customer_pyspark/data_date=2022-01-09/")
+df=read.csv("s3://sparkdatapro/Datafolder/2022-01-08.csv",header=True)
+df.write.parquet("s3://sparkdatapro/customer_pyspark/data_date=2022-01-08/)
+df=read.csv("s3://sparkdatapro/Datafolder/2022-01-07.csv",header=True)
+df.write.parquet("s3://sparkdatapro/customer_pyspark/data_date=2022-01-07/")
+df=read.csv("s3://sparkdatapro/Datafolder/2022-01-06.csv",header=True)
+df.write.parquet("s3://sparkdatapro/customer_pyspark/data_date=2022-01-06/",header=True)
+df=read.csv("s3://sparkdatapro/Datafolder/2022-01-05.csv")
+df.write.parquet("s3://sparkdatapro/customer_pyspark/data_date=2022-01-05/",header=True)
+df=read.csv("s3://sparkdatapro/Datafolder/2022-01-04.csv")
+df.write.parquet("s3://sparkdatapro/customer_pyspark/data_date=2022-01-04/",header=True)
+df=read.csv("s3://sparkdatapro/Datafolder/2022-01-03.csv")
+df.write.parquet("s3://sparkdatapro/customer_pyspark/data_date=2022-01-03/",header=True)
+df=read.csv("s3://sparkdatapro/Datafolder/2022-01-02.csv")
+df.write.parquet("s3://sparkdatapro/customer_pyspark/data_date=2022-01-02/",header=True)
+df=read.csv("s3://sparkdatapro/Datafolder/2022-01-01.csv")
+df.write.parquet("s3://sparkdatapro/customer_pyspark/data_date=2022-01-01/",header=True)
+>>>>>>> f9529db4a8bbe3877718a3fd183c62d41684f427

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 create external table if not exists ev_vehicle_info_src
 (
 vehicle_no varchar(11),
@@ -136,3 +137,143 @@ WITH (
      partitioned_by = ARRAY['make']) as 
 select vehicle_no,country,city,state,postal_code,model_year,model,ev_type,clean_alternative_fuel_vehicle_eligibility,
 electric_range, base_msrp,legislative_district,dol_vehicle_id,vehicle_location,electric_utility,a2020_census_tract,make from ev_vehicle_info_src1;
+=======
+create external table if not exists ev_vehicle_info_src
+(
+vehicle_no varchar(11),
+country varchar(15),
+city varchar(15),
+state varchar(3),
+postal_code int,
+model_year varchar(4), 
+make varchar(20),
+model string,
+ev_type varchar(50),
+clean_alternative_fuel_vehicle_eligibility varchar(50),
+electric_range int,
+base_msrp int,
+legislative_district int,
+dol_vehicle_id double,
+vehicle_location string,
+electric_utility string,
+2020_census_tract double
+)
+row format delimited fields terminated by ','
+tblproperties ("skip.header.line.count"="1")
+;
+
+aws s3 cp s3://hadoopdatahive/Electric_Vehicle_Population_Data.csv s3://hadoopdatahive/data/src_customer/ev_vehicle_info_src;
+create table if not exists ev_vehicle_info(
+vehicle_no varchar(11),
+country varchar(15),
+city varchar(15),
+state varchar(3),
+postal_code int,
+model_year varchar(4), 
+model string,
+ev_type varchar(50),
+clean_alternative_fuel_vehicle_eligibility varchar(50),
+electric_range int,
+base_msrp int,
+legislative_district int,
+dol_vehicle_id double,
+vehicle_location string,
+electric_utility string,
+2020_census_tract double)
+partitioned by (make varchar(20))
+stored as parquet
+TBLPROPERTIES ("parquet.compression"="SNAPPY");
+
+
+set hive.exec.dynamic.partition=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+
+
+insert into table ev_vehicle_info partition(make) select vehicle_no,country,city,state,postal_code,model_year,model,ev_type,clean_alternative_fuel_vehicle_eligibility,
+electric_range, base_msrp,legislative_district,dol_vehicle_id,vehicle_location,electric_utility,2020_census_tract,make from ev_vehicle_info_src;
+
+with apl as (select count(*) as cnt ,make from  ev_vehicle_info group by make),
+bdk as (select make,cnt,row_number()over(order by cnt desc) as rnk from apl )
+select * from bdk where rnk<=3;
+
+hive -hivevar rk=5 -f s3://hadoopdatahive/top_rank.sql
+
+
+select * from ev_vehicle_info where clean_alternative_fuel_vehicle_eligibility='Not eligible due to low battery range';
+select count(distinct(model)) as cnt ,make  from ev_vehicle_info group by make ;
+select count(distinct(model)) as cnt ,make  from ev_vehicle_info group by make ;
+
+select * from ev_vehicle_info where clean_alternative_fuel_vehicle_eligibility='Not eligible due to low battery range' and model_year<'2018' ;
+
+
+
+
+
+
+
+
+
+
+
+
+athena
+
+
+
+create external table if not exists ev_vehicle_info_src1
+(
+vehicle_no varchar(11),
+country varchar(15),
+city varchar(15),
+state varchar(3),
+postal_code int,
+model_year varchar(4), 
+make varchar(20),
+model string,
+ev_type varchar(50),
+clean_alternative_fuel_vehicle_eligibility varchar(50),
+electric_range int,
+base_msrp int,
+legislative_district int,
+dol_vehicle_id double,
+vehicle_location string,
+electric_utility string,
+a2020_census_tract double)
+
+row format delimited fields terminated by ','
+location "s3://hadoopdatahive/data/pizaa/ev_vehicle_info_src1"
+tblproperties ("skip.header.line.count"="1");
+
+
+create external table if not exists ev_vehicle_infoc(
+vehicle_no varchar(11),
+country varchar(15),
+city varchar(15),
+state varchar(3),
+postal_code int,
+model_year varchar(4), 
+model string,
+ev_type varchar(50),
+clean_alternative_fuel_vehicle_eligibility varchar(50),
+electric_range int,
+base_msrp int,
+legislative_district int,
+dol_vehicle_id double,
+vehicle_location string,
+electric_utility string,
+2020_census_tract double)
+partitioned by (make varchar(20))
+stored as parquet
+location "s3://hadoopdatahive/data/pizaa/ev_vehicle_infoc"
+TBLPROPERTIES ("parquet.compression"="SNAPPY");
+
+
+create table  ev_vehicle_demo
+WITH (
+     format = 'Parquet',
+     write_compression = 'SNAPPY', 
+     external_location = 's3://hadoopdatahive/data/pizaa/ev_vehicle_demo/',
+     partitioned_by = ARRAY['make']) as 
+select vehicle_no,country,city,state,postal_code,model_year,model,ev_type,clean_alternative_fuel_vehicle_eligibility,
+electric_range, base_msrp,legislative_district,dol_vehicle_id,vehicle_location,electric_utility,a2020_census_tract,make from ev_vehicle_info_src1;
+>>>>>>> f9529db4a8bbe3877718a3fd183c62d41684f427

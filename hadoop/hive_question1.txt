@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 
 
@@ -250,4 +251,258 @@ set hive.exec.dynamic.partition.mode=nonstrict;
 insert overwrite table transaction_fact partition(load_date,tran_country_cd)
 select tran_id,cust_id,tran_ammount,tran_type,tran_date,current_timestamp(),load_date,tran_country_cd from src_customer.cust_tran_fact;
 
+=======
+
+
+
+create table if not exists cust_tran_fact
+    > (
+    >     tran_id varchar (25),
+    >     cust_id varchar(20),
+    >     tran_ammount decimal(10,2),
+    >     tran_type varchar(1),
+    >     tran_country_cd varchar(3),
+    >     tran_date date
+    > )
+    > partitioned by (load_date varchar(10))
+    > row format delimited fields terminated by ','
+    > tblproperties ("skip.header.line.count"="1") ;
+hive> alter table cust_tran_fact add partition(load_date='2022-02-03');
+OK
+Time taken: 1.519 seconds
+hive> alter table cust_tran_fact add partition(load_date='2022-02-04');
+OK
+Time taken: 1.027 seconds
+hive> alter table cust_tran_fact add partition(load_date='2022-02-05');
+OK
+Time taken: 0.954 seconds
+hive> alter table cust_tran_fact add partition(load_date='2022-02-06');
+OK
+Time taken: 0.998 seconds
+hive> alter table cust_tran_fact add partition(load_date='2022-02-07');
+OK
+Time taken: 1.012 seconds
+hive> alter table cust_tran_fact add partition(load_date='2022-02-08');
+OK
+Time taken: 1.069 seconds
+hive> alter table cust_tran_fact add partition(load_date='2022-02-09');
+OK
+Time taken: 1.027 seconds
+hive> show partitions cust_tran_fact;
+OK
+load_date=2022-02-09
+load_date=2022-02-08
+load_date=2022-02-03
+load_date=2022-02-04
+load_date=2022-02-07
+load_date=2022-02-05
+load_date=2022-02-06
+
+
+
+
+
+
+aws s3 cp s3://projectemr/20220202.csv s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date='2022-02-03'/
+copy: s3://projectemr/20220202.csv to s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date=2022-02-03/20220202.csv
+ aws s3 cp s3://projectemr/20220203.csv s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date='2022-02-04'/
+copy: s3://projectemr/20220203.csv to s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date=2022-02-04/20220203.csv
+ aws s3 cp s3://projectemr/20220204.csv s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date='2022-02-05'/
+copy: s3://projectemr/20220204.csv to s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date=2022-02-05/20220204.csv
+ aws s3 cp s3://projectemr/20220205.csv s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date='2022-02-06'/
+copy: s3://projectemr/20220205.csv to s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date=2022-02-06/20220205.csv
+ aws s3 cp s3://projectemr/20220206.csv s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date='2022-02-07'/
+copy: s3://projectemr/20220206.csv to s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date=2022-02-07/20220206.csv
+ aws s3 cp s3://projectemr/20220207.csv s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date='2022-02-08'/
+copy: s3://projectemr/20220207.csv to s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date=2022-02-08/20220207.csv
+aws s3 cp s3://projectemr/20220208.csv s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date='2022-02-09'/
+copy: s3://projectemr/20220208.csv to s3://hadoopdatahive/data/src_customer/cust_tran_fact/load_date=2022-02-09/20220208.csv
+
+
+
+
+
+ create table if not exists table_states(
+    >     database_name varchar(20),
+    >     table_name varchar(50),
+    >     partition_key varchar(30),
+    >     rec_count int,
+    >     load_date date,
+    >     execution_key varchar(100)
+    > )
+    > stored as parquet
+    > TBLPROPERTIES ("parquet.compression"="SNAPPY");
+OK
+
+
+
+
+
+
+ INSERT INTO table_states SELECT 'src_customer','cust_tran_fact',load_date,count(*), CURRENT_DATE,concat('src_customer','-','cust_tran_fact','-',load_da                                                            te)
+    > FROM cust_tran_fact  where load_date='2022-02-03' group by load_date;
+Query ID = hadoop_20230202084951_f63541be-d71a-4961-b9ba-8357ca421ece
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1675326847274_0001)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      2          2        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 20.72 s
+----------------------------------------------------------------------------------------------
+Loading data to table src_Customer.table_states
+OK
+Time taken: 27.957 seconds
+hive>
+    >
+    > INSERT INTO table_states SELECT 'src_customer','cust_tran_fact',load_date,count(*), CURRENT_DATE,concat('src_customer','-','cust_tran_fact','-',load_da                                                            te)
+    > FROM cust_tran_fact  where load_date='2022-02-04' group by load_date;
+Query ID = hadoop_20230202085024_1a35c148-c5d4-4979-8f5d-6bab520eca70
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1675326847274_0001)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      2          2        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 20.56 s
+----------------------------------------------------------------------------------------------
+Loading data to table src_Customer.table_states
+OK
+Time taken: 26.207 seconds
+hive> INSERT INTO table_states SELECT 'src_customer','cust_tran_fact',load_date,count(*), CURRENT_DATE,concat('src_customer','-','cust_tran_fact','-',load_da                                                            te)
+    > FROM cust_tran_fact  where load_date='2022-02-06' group by load_date;
+Query ID = hadoop_20230202085152_3c19fc7c-f762-4f45-b8b9-2a31119b82e7
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1675326847274_0001)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      2          2        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 20.83 s
+----------------------------------------------------------------------------------------------
+Loading data to table src_Customer.table_states
+OK
+Time taken: 27.172 seconds
+hive> INSERT INTO table_states SELECT 'src_customer','cust_tran_fact',load_date,count(*), CURRENT_DATE,concat('src_customer','-','cust_tran_fact','-',load_da                                                            te)
+    > FROM cust_tran_fact  where load_date='2022-02-07' group by load_date;
+Query ID = hadoop_20230202085248_3e71531a-d6ec-4f95-9da0-fc911082c4aa
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1675326847274_0001)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      2          2        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 24.78 s
+----------------------------------------------------------------------------------------------
+Loading data to table src_Customer.table_states
+OK
+Time taken: 30.8 seconds
+hive>
+    >
+    >
+    > INSERT INTO table_states SELECT 'src_customer','cust_tran_fact',load_date,count(*), CURRENT_DATE,concat('src_customer','-','cust_tran_fact','-',load_da                                                            te)
+    > FROM cust_tran_fact  where load_date='2022-02-08' group by load_date;
+Query ID = hadoop_20230202085323_4a2466e0-0069-4534-b4ee-7eda18a1fdff
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1675326847274_0001)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      2          2        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 21.41 s
+----------------------------------------------------------------------------------------------
+Loading data to table src_Customer.table_states
+OK
+Time taken: 26.777 seconds
+hive>
+    >
+    > INSERT INTO table_states SELECT 'src_customer','cust_tran_fact',load_date,count(*), CURRENT_DATE,concat('src_customer','-','cust_tran_fact','-',load_da                                                            te)
+    > FROM cust_tran_fact  where load_date='2022-02-09' group by load_date;
+Query ID = hadoop_20230202085357_8e6ca21d-eacd-4e05-b550-bad4acba956f
+Total jobs = 1
+Launching Job 1 out of 1
+Status: Running (Executing on YARN cluster with App id application_1675326847274_0001)
+
+----------------------------------------------------------------------------------------------
+        VERTICES      MODE        STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+----------------------------------------------------------------------------------------------
+Map 1 .......... container     SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...... container     SUCCEEDED      2          2        0        0       0       0
+----------------------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 20.81 s
+----------------------------------------------------------------------------------------------
+Loading data to table src_Customer.table_states
+OK
+Time taken: 26.125 seconds
+hive> select * from table_states;
+OK
+src_customer    cust_tran_fact  2022-02-07      100000  2023-02-02      src_customer-cust_tran_fact-2022-02-07
+src_customer    cust_tran_fact  2022-02-08      100000  2023-02-02      src_customer-cust_tran_fact-2022-02-08
+src_customer    cust_tran_fact  2022-02-09      100000  2023-02-02      src_customer-cust_tran_fact-2022-02-09
+src_customer    cust_tran_fact  2022-02-03      100000  2023-02-02      src_customer-cust_tran_fact-2022-02-03
+src_customer    cust_tran_fact  2022-02-04      100000  2023-02-02      src_customer-cust_tran_fact-2022-02-04
+src_customer    cust_tran_fact  2022-02-06      100000  2023-02-02      src_customer-cust_tran_fact-2022-02-06
+src_customer    cust_tran_fact  2022-02-05      100000  2023-02-02      src_customer-cust_tran_fact-2022-02-05
+
+
+
+
+
+
+
+
+
+
+
+
+
+create database cards_dw location "s3://hadoopdatahive/data/";
+
+use cards_dw;
+
+create table if not exists transaction_fact
+(
+    tran_id varchar (25),
+    cust_id varchar(20),
+    tran_ammount decimal(10,2),
+    tran_type varchar(1),
+    tran_date date,
+    load_time timestamp
+
+)
+partitioned by (load_date date ,tran_country_cd varchar(3))
+stored as parquet
+TBLPROPERTIES ("parquet.compression"="SNAPPY");
+
+
+
+set hive.exec.dynamic.partition=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+
+
+
+insert overwrite table transaction_fact partition(load_date,tran_country_cd)
+select tran_id,cust_id,tran_ammount,tran_type,tran_date,current_timestamp(),load_date,tran_country_cd from src_customer.cust_tran_fact;
+
+>>>>>>> f9529db4a8bbe3877718a3fd183c62d41684f427
 hive -hivevar dataset_date='2023-02-03'   -f s3://hadoopdatahive/tran_load.sql
